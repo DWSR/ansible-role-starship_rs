@@ -1,0 +1,6 @@
+- hosts: test_kitchen
+  roles:
+    - starship_rs
+  vars:
+    ansible_connection: local
+    ansible_user_shell: /bin/zsh

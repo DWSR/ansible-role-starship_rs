@@ -1,0 +1,33 @@
+---
+# tasks file for starship_rs
+- name: Include OS-specific install tasks
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml"
+        - "{{ ansible_distribution }}.yml"
+        - "{{ ansible_os_family }}.yml"
+        - "install_from_source.yml"
+      paths:
+        - "{{ role_path }}/tasks"
+
+- name: Calculate Starship shell
+  ansible.builtin.set_fact:
+    starship_shell_name: "{{ ansible_user_shell | basename }}"
+
+- name: Ensure $HOME/.config exists
+  ansible.builtin.file:
+    path: "{{ ansible_user_dir }}/.config"
+    state: directory
+
+- name: Add configuration file for Starship
+  ansible.builtin.copy:
+    content: "{{ starship_rs_config | sivel.toiletwater.to_toml }}"
+    dest: "{{ ansible_user_dir }}/.config/starship.toml"
+    mode: 0600
+
+- name: Add Starship to profile.d
+  ansible.builtin.template:
+    dest: "{{ ansible_user_dir }}/.profile.d/99_starship"
+    src: 99_starship.j2
+    mode: 0600

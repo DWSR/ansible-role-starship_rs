@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "ansible-role-starship_rs"
+version = "0.1.0"
+description = "Ansible Role to install Starship.rs"
+authors = ["Brandon McNama <brandonmcnama@outlook.com>"]
+license = "MPL-2.0"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.dev-dependencies]
+ansible = "^2.10.1"
+pre-commit = "^2.8.1"
+yamllint = "^1.25.0"
+toml = "^0.10.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,13 @@
+---
+# defaults file for starship_rs
+starship_rs_config:
+  battery:
+    disabled: true
+  directory:
+    truncate_to_repo: false
+  python:
+    python_binary: python3
+  time:
+    disabled: false
+  status:
+    disabled: false

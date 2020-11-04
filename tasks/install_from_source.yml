@@ -1,0 +1,10 @@
+---
+- name: Ensure ~/.local/bin exists
+  file:
+    path: "{{ ansible_user_dir }}/.local/bin"
+    state: directory
+
+- name: Install from source
+  script:
+    cmd: install_starship.sh --bin-dir "{{ ansible_user_dir }}/.local/bin" --force
+    creates: "{{ ansible_user_dir }}/.local/bin/starship"
