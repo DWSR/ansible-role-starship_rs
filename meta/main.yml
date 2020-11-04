@@ -1,0 +1,32 @@
+galaxy_info:
+  role_name: starship_rs
+  author: Brandon McNama <brandonmcnama@outlook.com>
+  description: Installs Starship.rs for the current user
+  license: MPL-2.0
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - xenial
+        - bionic
+        - focal
+    - name: MacOSX
+      versions:
+        - "10.15"
+
+  galaxy_tags:
+    - starship_rs
+    - starship
+    - shell
+    - zsh
+    - bash
+
+dependencies:
+  - src: dwsr.profile_d
+    version: ">=0.1.1"
+
+collections:
+    # Homebrew
+  - community.general
+    # to_toml filter
+  - sivel.toiletwater

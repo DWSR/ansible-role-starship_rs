@@ -1,0 +1,128 @@
+name: CI
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Setup Poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: '1.1.3'
+      - name: Setup Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+      - name: Restore dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            vendor
+            .venv
+          key: "build-v1-${{ runner.os }}-${{ hashFiles('poetry.lock', 'Gemfile.lock')}}"
+          restore-keys: |
+            build-v1-${{ runner.os }}-${{ hashFiles('poetry.lock', 'Gemfile.lock')}}
+            build-v1-${{ runner.os }}-
+            build-v1-
+      - name: Install dependencies
+        run: >
+          bundle install --frozen --jobs 2 --path vendor/bundle --clean &&
+          poetry config virtualenvs.in-project true &&
+          poetry install --remove-untracked
+      - name: Run pre-commit
+        run: >
+          poetry run pre-commit install --install-hooks &&
+          poetry run pre-commit run --all-files
+
+  kitchen-docker:
+    name: "Run Test Kitchen on Linux"
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Setup Poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: '1.1.3'
+      - name: Setup Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+      - name: Restore dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            vendor
+            .venv
+          key: "build-v1-${{ runner.os }}-${{ hashFiles('poetry.lock', 'Gemfile.lock')}}"
+          restore-keys: |
+            build-v1-${{ runner.os }}-${{ hashFiles('poetry.lock', 'Gemfile.lock')}}
+            build-v1-${{ runner.os }}-
+            build-v1-
+      - name: Install dependencies
+        run: >
+          bundle install --frozen --jobs 2 --path vendor/bundle --clean &&
+          poetry config virtualenvs.in-project true &&
+          poetry install --remove-untracked
+        # Can't run in parallel because of the hax required to get kitchen-ansible
+        # working with single roles
+      - name: Run Test Kitchen
+        run: >
+          poetry run bundle exec kitchen test linux
+
+  kitchen-macos:
+    name: "Run Test Kitchen on MacOS"
+    needs: lint
+    runs-on:
+      - macos-10.15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Setup Poetry
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: '1.1.3'
+      - name: Setup Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+      - name: Restore dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            vendor
+            .venv
+          key: "build-v1-${{ runner.os }}-${{ hashFiles('poetry.lock', 'Gemfile.lock')}}"
+          restore-keys: |
+            build-v1-${{ runner.os }}-${{ hashFiles('poetry.lock', 'Gemfile.lock')}}
+            build-v1-${{ runner.os }}-
+            build-v1-
+      - name: Install dependencies
+        run: >
+          bundle install --frozen --jobs 2 --path vendor/bundle --clean &&
+          poetry config virtualenvs.in-project true &&
+          poetry install --remove-untracked &&
+          brew install docker
+      - name: Run Test Kitchen
+        shell: /bin/zsh {0}
+        run: >
+          poetry run bundle exec kitchen test darwin

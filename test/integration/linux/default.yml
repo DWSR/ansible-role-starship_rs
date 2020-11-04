@@ -1,0 +1,3 @@
+- hosts: test_kitchen
+  roles:
+    - starship_rs

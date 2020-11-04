@@ -1,0 +1,8 @@
+---
+roles:
+  - src: dwsr.profile_d
+
+collections:
+  - name: community.general
+  # For to_toml filter
+  - name: sivel.toiletwater

@@ -1,0 +1,4 @@
+- name: Install Starship.rs via brew
+  community.general.homebrew:
+    name: starship
+    state: latest
