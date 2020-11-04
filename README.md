@@ -1,38 +1,88 @@
-Role Name
-=========
+# starship_rs [![Build Status](https://github.com/DWSR/ansible-role-starship_rs/workflows/CI/badge.svg?branch=master)](https://github.com/DWSR/ansible-role-starship_rs/actions?query=workflow%3ACI)
 
-A brief description of the role goes here.
+An Ansible role to install [Starship.rs](https://starship.rs) for the current user
 
-Requirements
-------------
+## Requirements
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+### Control Node
 
-Role Variables
---------------
+* `toml` Python package
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+### Remote Node
 
-Dependencies
-------------
+None
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+## Role Defaults
 
-Example Playbook
-----------------
+| Variable                            |   Type  |              Default Value            | Description |
+|-------------------------------------|:-------:|:-------------------------------------:|-------------|
+| `starship_rs_config`                | `dict`  | see `defaults/main.yml` | The configuration for Starship. See [the Starship docs](https://starship.rs/config/) for more info. |
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+## Dependencies
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+### Roles
 
-License
--------
+* [dwsr.profile_d](https://galaxy.ansible.com/dwsr/profile_d)
 
-BSD
+### Collections
 
-Author Information
-------------------
+* [community.general](https://galaxy.ansible.com/community/general)
+* [sivel.toiletwater](https://galaxy.ansible.com/sivel/toiletwater)
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+## Example Playbook
+
+```yaml
+- hosts: my-workstation
+  roles:
+    - starship_rs
+  vars:
+    starship_rs_config:
+      battery:
+        disabled: false
+      directory:
+        truncate_to_repo: true
+      status:
+        disabled: false
+```
+
+## License
+
+MPL-2.0
+
+## Author Information
+
+This role was created in 2020 by [Brandon McNama](https://github.com/dwsr).
+
+## Development
+
+### Dev Requirements
+
+* Ruby `2.7` or later
+* Python `3.8` or later
+* Poetry `1.1` or later
+
+This repository supports [asdf](https://asdf-vm.com) for language selection.
+
+### Installation
+
+`bundle install --path vendor/bundle --jobs 2 --clean && poetry install --remove-untracked`
+
+### Running linters
+
+`poetry run pre-commit`
+
+### Running tests
+
+This role uses [Test Kitchen](https://kitchen.ci) and [Inspec](https://inspec.io) for testing
+instead of Molecule. This is done in order to more easily support multiple testing drivers (both
+`docker` and `exec`) to ease testing on multiple operating systems.
+
+There are 2 suites:
+
+* The `linux` suite is aimed at testing against Linux hosts using `bash` as the default shell.
+  This suite uses `docker` to test multiple variants of `ubuntu`.
+* The `darwin` suite is aimed at testing against MacOS using `zsh` as the default shell. This suite
+  uses the `exec` driver to execute commands against the current host and is intended to be run
+  against a CI runner host, such as in GitHub Actions.
+
+To run tests, run `bundle exec poetry run kitchen test <suite name>`.
